@@ -6,11 +6,19 @@ import 'dart:math';
 import 'package:threshold/threshold.dart';
 
 /// Decompress a json object or just return it if it's not compressed
-Map<String, dynamic> decompressJson(Map<String, dynamic> json) {
+Map<String, dynamic> decompressJson(Map<String, dynamic> json,
+    {bool ignoreWarnings = false}) {
   if (json.containsKey("_k0")) {
     String s = "";
     for (int i = 0; i < json.length; i++) {
-      s += json["_k$i"];
+      dynamic m = json["_k$i"];
+
+      if (m is String) {
+        s += m;
+      } else if (!ignoreWarnings) {
+        print(
+            "Failed to decompress chunk $i. It was not a string but a ${m?.runtimeType ?? "null"}");
+      }
     }
 
     return jsonDecode(decompress(s));
