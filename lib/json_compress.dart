@@ -30,7 +30,14 @@ Map<String, dynamic> decompressJson(Map<String, dynamic> json,
       }
     }
 
-    Map<String, dynamic> out = jsonDecode(decompress(s));
+    String raw = decompress(s);
+    raw = raw.replaceAll("", "");
+    raw = raw.replaceAll("", "");
+    raw = raw.replaceAll("", "");
+    raw = raw.replaceAll("", "");
+    raw = raw.replaceAll("", "");
+
+    Map<String, dynamic> out = jsonDecode(raw);
 
     if (keepUnknownKeys) {
       out = out.flattened();
@@ -52,7 +59,8 @@ Map<String, dynamic> decompressJson(Map<String, dynamic> json,
 
 Map<String, dynamic> _compressAllJson(Map<String, dynamic> json,
     {int split = 8192, bool forceEncode = false}) {
-  String compressed = compress(jsonEncode(json), forceEncode: forceEncode);
+  String compressed =
+      compress(jsonEncode(json), forceEncode: forceEncode, allowZLib: false);
   Map<String, dynamic> map = {};
   int g = 0;
   for (int i = 0; i < compressed.length; i += split) {
