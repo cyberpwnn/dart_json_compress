@@ -6,6 +6,25 @@ import 'dart:math';
 import 'package:jpatch/jpatch.dart';
 import 'package:threshold/threshold.dart';
 
+Map<String, dynamic> forceJsonDecode(String json) {
+  try {
+    return jsonDecode(json);
+  } catch (error) {
+    String e = error.toString();
+
+    if (e.contains("(at character ")) {
+      String cc = e.split("character ").last.split(")").first;
+      int c = int.parse(cc);
+      // remove that char
+      json = json.substring(0, c - 1) + json.substring(c);
+      print("FIXED $e");
+      return forceJsonDecode(json);
+    }
+  }
+
+  throw "Failed to decode json";
+}
+
 /// Decompress a json object or just return it if it's not compressed
 Map<String, dynamic> decompressJson(Map<String, dynamic> json,
     {bool ignoreWarnings = false, bool keepUnknownKeys = true}) {
@@ -30,14 +49,7 @@ Map<String, dynamic> decompressJson(Map<String, dynamic> json,
       }
     }
 
-    String raw = decompress(s);
-    raw = raw.replaceAll("", "");
-    raw = raw.replaceAll("", "");
-    raw = raw.replaceAll("", "");
-    raw = raw.replaceAll("", "");
-    raw = raw.replaceAll("", "");
-
-    Map<String, dynamic> out = jsonDecode(raw);
+    Map<String, dynamic> out = forceJsonDecode(decompress(s));
 
     if (keepUnknownKeys) {
       out = out.flattened();

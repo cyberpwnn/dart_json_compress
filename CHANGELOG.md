@@ -1,3 +1,7 @@
+## 1.0.8
+
+* Automatic Control Character Stripping on error.
+
 ## 1.0.7
 
 * SDK Constraint
